@@ -3,8 +3,8 @@
 
 ### Kuvaus:
 
-#### Yksilöprojekti ohjelmistokehityksen teknologiat kurssilla 
-#### Toteuttu Python ja Django web-teknologialla 
+### Yksilöprojekti ohjelmistokehityksen teknologiat kurssilla 
+### Toteutettu Python ja Django web-teknologialla 
 
 
 **Käyttää fixer.io api:a valuuttakurssien hakemiseen**
