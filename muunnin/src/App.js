@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Typography, AppBar, Paper, TableRow, Table, TableHead, TableCell,
   TableBody, Button} from '@material-ui/core';
-//import {FixedSizeGrid as Grid} from 'react-window';
 import {allstyles} from './styles';
 import './App.css'
 import {Cmodal} from './Components/Cmodal';
@@ -9,7 +8,6 @@ import axios from 'axios';
 
 export default function App() {
 
-  const [currency, setCurrency] = useState('');
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
 
@@ -21,7 +19,7 @@ export default function App() {
   },[]);
 
   const getCurr = () => {
-    let url = 'http://127.0.0.1:8000/api/valuutat';
+    let url = 'http://127.0.0.1:8000/hae';
         axios.get(url)
         .then(res => setData(res.data))
         .catch((err) => { 

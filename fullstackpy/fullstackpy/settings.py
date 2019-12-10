@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Application definition
 
@@ -41,6 +42,18 @@ INSTALLED_APPS = [
     'rest_framework',
     'palvelin'
 ]
+
+REST_FRAMEWORK = {
+   'DEFAULT_AUTHENTICATION_CLASSES': (
+       ##'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+   ),
+   'DEFAULT_PERMISSION_CLASSES': (
+       ##'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        ##'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.DjangoModelPermissions',
+   ),
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

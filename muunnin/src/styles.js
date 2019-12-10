@@ -1,4 +1,3 @@
-import {createMuiTheme} from '@material-ui/core/styles';
 import {makeStyles} from '@material-ui/styles';
 import {Dimensions} from './Components/Dimensions';
 
@@ -27,11 +26,9 @@ export function allstyles() {
     
     const paper = makeStyles({
         root: {
-            width: dimensions.width/4,
-            border: 1, 
-            margin: 5,
-            borderColor: '#b6b6b6',
+            width: dimensions.width, 
             justifyContent: 'center',
+            alignItems: 'center',
             alignContent: 'center'
         }
     })

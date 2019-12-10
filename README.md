@@ -11,7 +11,10 @@
 
 **Muuntaa syötteeltä annetun määrän euroja, listasta valittuun valuttaan**
 
-**Mahdollinen lisäominaisuus: käänteinen muunnos**
+**Valuuttojen käänteinen muunnos**
+
+
+**Autentikointi, käyttäjäkohtaiset luvat HTTP:n perus autentikoinnilla ja django rest-framework permission luokkien avulla**
 
 
 **Tekijä: Lauri Leinonen**
