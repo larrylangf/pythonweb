@@ -12,6 +12,7 @@ class Customer(Document):
 
 class Order(Document):
     order_date = fields.DateTimeField(default=datetime.date.now())
+    order_time = fields.DateTimeField(default=datetime.time.now())
     delivery_address = fields.StringField
 
 
@@ -28,3 +29,4 @@ class CostCenter(Document):
 class Supplier(Document):
     name = fields.StringField
     customers = fields.ListField(fields.EmbeddedDocument(Customer))
+    products = fields.ListField(fields.EmbeddedDocument(Product))
