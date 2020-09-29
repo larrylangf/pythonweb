@@ -1,10 +1,11 @@
 from django.contrib import admin
 
 # Register your models here.
-from djongo.contrib inport admin
+'''from django.contrib import admin
 from .models import *
 
-class AppAdmin(admin.ModelAdmin):
+class CustomerAdmin(admin.ModelAdmin):
     list_display = ('name', 'notification_email')
 
-admin.site.register(Customer, AppAdmin, Supplier, Product, Order, CostCenter)
+admin.register(Customer, CustomerAdmin)
+'''
