@@ -1,25 +1,22 @@
 # Django settings for mongorest project.
-
 import os
 from dotenv import load_dotenv
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
+
 load_dotenv()
 SECRET_KEY = os.getenv('DJANGO_TOKEN')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -40,13 +37,28 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'mongorest.urls'
+
+# allowed requests & hosts
+
+ALLOWED_HOSTS = []
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000/',
+    '.agendacloud.fi',
+    '.postman.com'
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'https://agendacloud.fi',
+    'https://postman.com'
+]
 
 TEMPLATES = [
     {
@@ -71,25 +83,11 @@ WSGI_APPLICATION = 'mongorest.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 '''
-db_host = os.getenv('VM_HOST')
-user = os.getenv('MONGO_USER')
-password = os.getenv('MONGO_PASS')
-
-
 DATABASES = {
     'default': {
         'ENGINE': '',
     }
 }
-
-
-try:
-    url = 'mongodb://{user}:{password}@{host}:27017/pymongo-api'
-    connect('agenda-pro-api', alias='default', host=url, authSource=admin, ssl=false, authMecanism=SCRAM-SHA-1)
-except (pymongo.errors.ConnectionFailure, Exception) as e:
-    print('Server not avaible \n',e)
-else:
-    print('You are connected!')
 '''
 
 # Password validation
