@@ -1,81 +1,294 @@
 import datetime
-from rest_framework.response import Response
-from rest_framework.status import * 
-import rest_framework.exceptions as req_err
-from .services import mongoclient
+# from rest_framework.response import Response
+from django.http import JsonResponse
+# from rest_framework.status import *
 import json
+import pymongo
+from decouple import config
 
 
-db = mongoclient()
+user = config('MONGO_U')
+password = config('MONGO_S')
+host = config('MONGO_HOST')
+db_name = config('DB_NAME')
 
-order_docs = {}
+
+try: 
+    url = f'mongodb://{user}:{password}@{host}:27017/{db_name}?authSource=admin&readPreference=primary&ssl=false&authMechanism=SCRAM-SHA-1'
+    client = pymongo.MongoClient(url, document_class=dict)
+    db = client[f'{db_name}']
+   
+    print(f"connected to {client}")
+        
+except (pymongo.errors.ConnectionFailure, Exception) as e:
+    
+    print(f'Server not avaible \n {e}')
+
+
+amount_docs = {}
+address_docs = {}
 cost_center_docs = {}
 customer_docs = {}
 product_docs = {}
 supplier_docs = {}
+order_docs = {}
+delivery_location_docs = {}
 
 
-def orders(request):
-    
+def amounts(request):
     try:
-        if request.method == 'GET' or request.GET.get('_id'):
-            id_get = request.GET.get('_id')
-            for doc in db.orders.find():
-                order_docs.add(doc)
+        if request.method == 'GET':
+            docs = db['amounts'].find({})
+            for c in docs.raw:
+                amount_docs.update(bsonjs.dumps(c))
             
-            return Response(json.dumps(order_docs), content_type='application/json')
-        
-        elif request.method == 'POST' or request.PUT.put('_id'):
-            id_put = request.PUT.put('_id')
-            data = json.loads(request.body)
-            db.orders.update_one({'_id': id_put}, {'$set': data})
+            return JsonResponse(amount_docs)
 
-            return Response(json.dumps({'updated', db.orders.find({'_id':id_put})}), content_type='application/json')
-        
-        elif request.method == 'DELETE' and request.DELETE.delete('_id'):
-            id_del = request.DELETE.delete('_id')
-            del_sum = db
-            db['orders'].drop_one({'_id':id_del})
+        elif request.method == 'POST':
+            data = bsonjs.loads(request.body)
+            q = db['amounts'].insert_one(RawBSONDocument(data))
 
-            return Response(json.dumps({'msg':'removed', 'del_count': 1}), content_type='application/json')
+            return JsonResponse({'added'})
+
+        elif request.method == 'PUT':
+            data = bsonjs.loads(request.body)
+            q = db['amounts'].update_one({'_id':request.GET.get('id')}, RawBSONDocument(data))
+        
+            return JsonResponse({'updated': q.updated_count()})
+
+        else:
+            q = db['amounts'].delete_one({'_id':request.GET.get('id')})
+        
+            return JsonResponse({'deleted', q.deleted_count()})
+    
+    except (Exception) as e:
+
+        queryset = list(db['amounts'].find({}))
+
+        return JsonResponse({'error': f'Invalid request: {e}'})
+
+
+def addresses(request):
+    try:
+        if request.method == 'GET':
+            docs = db['addresses'].find({})
+            for c in docs.raw:
+                address_docs.update(bsonjs.dumps(c))
+            
+            return JsonResponse(address_docs)
+
+        elif request.method == 'POST':
+                data = bsonjs.loads(request.body)
+                q = db['addresses'].insert_one(RawBSONDocument(data))
+
+                return JsonResponse({'added'})
+
+        elif request.method == 'PUT':
+            data = bsonjs.loads(request.body)
+            q = db['addresses'].update_one({'_id': request.GET.get('id')}, RawBSONDocument(data))
+
+            return JsonResponse({'updated': q.updated_count()})
+        
+        elif request.method == 'DELETE':
+            id_del = request.GET.get('id')
+            q = db['addresses'].delete_one({'_id': id_del})
+            
+            return JsonResponse({'deleted', q.deleted_count()})    
 
     except (Exception) as e:
 
-        queryset = db.orders.find()
-        return Response(json.dumps({'error': 'Invalid request: {0}'.format(str(e))}), status=HTTP_400_BAD_REQUEST, content_type='application/json')
+        queryset = list(db['addresses'].find({}))
+
+        return JsonResponse({'error': f'Invalid request: {e}'})
 
 
 def cost_centers(request):
-    for doc in db['CostCenters'].find():
-        cost_center_docs.add(doc)
+    try:
+        if request.method == 'GET':
+            docs = db['cost-centers'].find({})
+            for doc in docs.raw:
+                cost_center_docs.add(bsonjs.dumps(doc))
 
-    queryset = db.cost_centers.find()
+            return JsonResponse(cost_center_docs)
+        
+        elif request.method == 'POST':
+            data = bsonjs.loads(request.body)
+            q = db['cost-centers'].insert_one(RawBSONDocument(data))
 
-    return Response(json.JSONEncoder(cost_center_docs))
+            return JsonResponse({'added': q.inserted_count()})
+
+        elif request.method == 'PUT':
+            data = bsonjs.loads(request.body)
+            q = db['cost-centers'].update_one({'_id':request.POST.get('_id')}, RawBSONDocument(data))
+
+            return JsonResponse({'updated': q.updated_count()})
+        
+        elif request.method == 'DELETE':
+            q = db['cost-centers'].delete_one({'_id':request.GET.get('id')})
+        
+            return JsonResponse({'deleted', q.deleted_count()})
+
+    except (Exception) as e:
+
+        queryset = list(db['cost-centers'].find({}))
+        return JsonResponse({'error': f'Invalid request: {e}'})
 
 
 def customers(request):
-    for doc in db['Customers'].find():
-        customer_docs.add(doc)
-    
-    queryset = db.customers.find()
+    try:
+        if request.method == 'GET':
+            docs = db['customers'].find({})
+            for doc in docs.raw:
+                customer_docs.add(bsonjs.dumps(doc))
 
-    return Response(json.JSONEncoder(customer_docs))
+            return JsonResponse(customer_docs)
+        
+        elif request.method == 'POST':
+            data = bsonjs.loads(request.body)
+            q = db['customers'].insert_one(RawBSONDocument(data))
+
+            return JsonResponse({'added': q.inserted_count()})
+
+        elif request.method == 'PUT':
+            data = bsonjs.loads(request.body)
+            q = db['customers'].update_one({'_id':request.POST.get('_id')}, RawBSONDocument(data))
+
+            return JsonResponse({'updated': q.updated_count()})
+
+        elif request.method == 'DELETE':
+            if request.GET.get('id'):
+                c = db['customers'].delete_one({'_id':request.GET.get('id')})
+            
+            else:
+                data = bsonjs.loads(request.body)
+                c = db['customers'].delete_many(RawBSONDocument(data))
+            
+            return JsonResponse({'deleted': c.deleted_count()})
+
+    except Exception as e:    
+        
+        queryset = list(db['customers'].find({}))
+
+        return JsonResponse({'error': f'Invalid request: {e}'})
 
 
 def products(request):
-    for doc in db['Products'].find():
-        product_docs.add(doc)
+    try:
+        if request.method == 'GET':
+            docs = db['products'].find({})
+            for doc in docs.raw:
+                product_docs.add(bsonjs.dumps(doc))
 
-    queryset = db.products.find()    
+            return JsonResponse(product_docs)
+        
+        elif request.method != 'DELETE':
+            data = json.loads(request.body)
+            q = db['products'].find_one_and_update({'_id':data['_id']}, {RawBSONDocument(data)}, upsert=True)
+        
+        else:
+            q = db['products'].delete_one({'_id': request.GET.get('id')})
 
-    return Response(json.JSONEncoder(pro))
+            return JsonResponse({'msg':'removed', 'del_count': q.deleted_count()})
+
+    except Exception as e:
+
+        queryset = list(db['products'].find({}))
+
+        return JsonResponse({'error': f'Invalid request: {e}'})    
+
 
 
 def suppliers(request):
-    for doc in db['Suppliers'].find():
-        supplier_docs.add(doc)
+    try:
+        if request.method == 'GET':
+            docs = db['suppliers'].find({})
+            for doc in docs.raw:
+                supplier_docs.add(bsonjs.dumps(doc))
 
-    queryset = db.suppliers.find()
+            return print(supplier_docs)
+        
+        elif request.method != 'DELETE':
+            data = bsonjs.loads(request.body)
+            q = db['suppliers'].find_one_and_update({'_id':data['_id']}, {RawBSONDocument(data)}, upsert=True)
+        
+            return JsonResponse({'updated count': q.updated_count()})
 
-    return Response(json.JSONEncoder(supplier_docs))
+        else:
+            q = db['suppliers'].delete_one({'_id': request.GET.get('id')})
+
+            return JsonResponse({'msg':'removed', 'del_count': q.deleted_count()})
+
+
+    except Exception as e:
+
+        queryset = list(db['suppliers'].find({}))
+
+        return JsonResponse({'error': f'Invalid request: {e}'})
+
+
+def orders(request):
+    try:
+        if request.method == 'GET':
+            docs = db['orders'].find({})
+            for doc in docs.raw:
+                order_docs.add(bsonjs.dumps(doc))
+            
+            return JsonResponse(order_docs)
+        
+        elif request.method == 'POST':
+            data = bsonjs.loads(request.body)
+            q = db['orders'].insert_one(RawBSONDocument(data))
+
+            return JsonResponse({'added'})
+
+        elif request.method == 'PUT':
+            data = bsonjs.loads(request.body)
+            q = db['orders'].update_one({'_id':request.POST.get('_id')}, RawBSONDocument(data))
+
+            return JsonResponse({'updated': q.updated_count()})
+        
+        elif request.method == 'DELETE':
+            id_del = request.GET.get('_id')
+            q = db['orders'].delete_one(bsonjs.loads({'_id':id_del}))
+            
+            return JsonResponse({'msg':'removed', 'del_count': q.deleted_count()})
+
+    except (Exception) as e:
+
+        queryset = list(db['orders'].find({}))
+
+        return JsonResponse({'error': f'Invalid request: {e}'})
+
+
+def delivery_locations(request):
+    try:
+        if request.method == 'GET':
+            colls = db['delivery_locations'].find({})
+            for doc in colls.raw:
+                return print(bsonjs.dumps(doc))
+        
+        elif request.method == 'POST':
+            data = bsonjs.loads(request.body)
+            q = db['orders'].insert_one(RawBSONDocument(data))
+
+            return JsonResponse({'added'})
+
+        elif request.method == 'PUT':
+            data = bsonjs.loads(request.body)
+            q = db['delivery_locations'].update_one({'_id':request.POST.get('_id')}, data)
+
+            return JsonResponse({'updated': q.modified_count()})
+        
+        elif request.method == 'DELETE':
+            id_del = request.GET.get('id')
+            q = db['delivery_locations'].delete_one({'_id':id_del})
+            
+            return JsonResponse({'msg':'removed', 'del_count': q.deleted_count()})
+    
+    except (Exception) as e:
+
+        queryset = list(db['delivery_locations'].find({}))
+        return JsonResponse({'error': f'Bad request: {e}'}, status=400)
+
+
+client.close()

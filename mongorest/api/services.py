@@ -1,20 +1,23 @@
 # module to connect remote mongoclient
-import os
-from dotenv import load_dotenv
-import pymongo
-
-load_dotenv()
-host = os.getenv('VM_HOST')
-user = os.getenv('MONGO_USER')
-password = os.getenv('MONGO_PASS')
+'''import pymongo
+from decouple import config
 
 
-def mongoclient():
+user = config('MONGO_U')
+password = config('MONGO_S')
+
+
+def connect_client():
     try: 
-        url = 'mongodb://{user}:{password}@{host}:27017/?authSource=admin&readPreference=primary&ssl=false&authMechanism=SCRAM-SHA-1'
+        url = f'mongodb://{user}:{password}@mongodb.agendacloud.fi:27017/pymongo-api?authSource=admin&readPreference=primary&ssl=false&authMechanism=SCRAM-SHA-1'
         client = pymongo.MongoClient(url)
-        db = client['pymongo-api']
+
+        return print("You are connected!"), client
+        
     except (pymongo.errors.ConnectionFailure, Exception) as e:
-        return print('Server not avaible \n',e)
-    else:
-        return print("You are connected!"), db
+        
+        return print(f'Server not avaible \n {e}')'''
+        
+    
+# for testing mongo connection & query results
+# connect_client()
