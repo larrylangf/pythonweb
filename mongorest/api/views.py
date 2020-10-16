@@ -2,25 +2,12 @@ from django.http import JsonResponse
 import rest_framework.exceptions as rest_err 
 import datetime
 import json
-import requests
-import pymongo
-from decouple import config
-from bson import json_util, objectid
+from bson import json_util, objectid, dbref
+import api.services as funcs
 
 
-user = config('MONGO_U')
-password = config('MONGO_S')
-host = config('MONGO_HOST')
-db_name = config('DB_NAME')
-
-try: 
-    url = f'mongodb://{user}:{password}@{host}:27017/{db_name}?authSource=admin&readPreference=primary&ssl=false&authMechanism=SCRAM-SHA-1'
-    client = pymongo.MongoClient(url, document_class=dict)
-    db = client[f'{db_name}']
-    print(f"connected to {client}")
-        
-except (pymongo.errors.ConnectionFailure, Exception) as e:
-    print(f'Server not avaible \n {e}')
+client = funcs.connect_client()
+db = client['pymongo-api']
 
 
 def amounts(request):
@@ -111,11 +98,17 @@ def cost_centers(request):
 
 
 def customers(request):
-    col = col.find({})
+    col = db.customers
     queryset = list(col.find({}))
     try:
         if request.method == 'GET':
-            return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
+            id_get = request.GET.get('id')
+            orders = request.GET.get('orders')
+            if id_get:
+                q = col.find_one({'_id': objectid.ObjectId(id_get)})
+                return JsonResponse(json.loads(json_util.dumps()))
+            else:
+                return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
         
         elif request.method != 'DELETE':
             data = json.loads(request.body)
@@ -204,15 +197,26 @@ def orders(request):
     queryset = list(col.find({}))
     try:
         if request.method == 'GET':
-            return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
+            id_get = request.GET.get('id')
+            customers = request.GET.get('customers')
+            if id_get and customers:
+                q = col.find({'customers._id': objectid.ObjectId(str(id_get))})
+                return JsonResponse(json.loads(json_util.dumps(list(q))))
+            elif id_get:
+                q = col.find_one({'_id': objectid.ObjectId(str(id_get))})
+            else:
+                return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
         
         elif request.method != 'DELETE':
             data = json.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
+            t = datetime.datetime.now()
             if id_put:
                 reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
             else:
+                d = datetime.date.today()
+                data.update({'order_date': d.strftime('%d.%m.%Y'), 'order_time': t.strftime('%H:%M:%S')})
                 reqs.append(pymongo.InsertOne(data))
             q = col.bulk_write(reqs)
 
@@ -252,6 +256,35 @@ def delivery_locations(request):
             q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
     
             return JsonResponse({'removed': q.deleted_count}, safe=False)
+    
+    except (Exception) as e:
+        return JsonResponse({'error': f'Bad request: {e}'}, status=400)
+
+
+def companies(request):
+    col = db.companies
+    queryset = list(col.find({}))
+    try:
+        if request.method == 'GET':
+            return JsonResponse(json.loads(json_util.dumps(list(col.find({})))))
+
+        elif request.method != 'DELETE':
+            data = json.loads(request.body)
+            reqs = []
+            id_put = request.GET.get('id')
+            if id_put:
+                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
+            else:
+                reqs.append(pymongo.InsertOne(data))
+            q = col.bulk_write(reqs)
+
+            return JsonResponse({'changed': q.modified_count, 'added': q.inserted_count})
+        
+        else:
+            id_del = request.GET.get('id')
+            q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
+    
+            return JsonResponse({'removed': q.deleted_count})
     
     except (Exception) as e:
         return JsonResponse({'error': f'Bad request: {e}'}, status=400)
