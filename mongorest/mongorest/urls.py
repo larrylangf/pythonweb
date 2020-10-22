@@ -5,11 +5,11 @@ from api import views
 
 urlpatterns = [
     path('amounts', views.amounts),
+    path('addresses', views.addresses),
     path('orders', views.orders),
     path('customers', views.customers),
     path('products', views.products),
     path('cost-centers', views.cost_centers),
     path('suppliers', views.suppliers),
-    path('delivery-locations', views.delivery_locations),
     path('companies', views.companies)
 ]

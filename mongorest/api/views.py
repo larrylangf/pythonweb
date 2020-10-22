@@ -1,14 +1,13 @@
 from django.http import JsonResponse
 import rest_framework.exceptions as rest_err 
-import datetime
 import json
+import pymongo
 from bson import json_util, objectid, dbref
 import api.services as funcs
 
 
-client = funcs.connect_client()
-db = client['pymongo-api']
-
+db = funcs.connect_client()
+t = funcs.ftstamp()
 
 def amounts(request):
     col = db.amounts
@@ -18,12 +17,15 @@ def amounts(request):
             return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
 
         elif request.method != 'DELETE':
-            data = json.loads(request.body)
+            data = json_util.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
+            products = request.GET,get('products')
             if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
+                data.update({'updated_at': t})
+                reqs.append(pymongo.ReplaceOne({'_id': objectid.ObjectId(str(id_put))}, data))
             else:
+                data.update({'created_at': t})
                 reqs.append(pymongo.InsertOne(data))
             q = col.bulk_write(reqs)
 
@@ -33,7 +35,7 @@ def amounts(request):
             id_del = request.GET.get('id')
             q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
             
-            return JsonResponse({'removed': q.deleted_count}, safe=False)
+            return JsonResponse({'removed': q.deleted_count})
     
     except rest_err.bad_request as e:
         return JsonResponse({'error': f'bad request: {e}'}, status=400)
@@ -47,12 +49,15 @@ def addresses(request):
             return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
 
         elif request.method != 'DELETE':
-            data = json.loads(request.body)
+            data = json_util.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
+            dlocs = request.GET.get('delivery-locations')
             if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
+                data.update({'updated_at': t})
+                reqs.append(pymongo.ReplaceOne({'_id': objectid.ObjectId(str(id_put))}, data))
             else:
+                data.update({'created_at': t})
                 reqs.append(pymongo.InsertOne(data))
             q = col.bulk_write(reqs)
 
@@ -62,7 +67,7 @@ def addresses(request):
             id_del = request.GET.get('id')
             q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
             
-            return JsonResponse({'removed': q.deleted_count}, safe=False)    
+            return JsonResponse({'removed': q.deleted_count})    
 
     except rest_err.bad_request as e:
         return JsonResponse({'error': f'bad request: {e}'})
@@ -76,12 +81,14 @@ def cost_centers(request):
             return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
         
         elif request.method != 'DELETE':
-            data = json.loads(request.body)
+            data = json_util.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
             if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
+                data.update({'updated_at': t})
+                reqs.append(pymongo.ReplaceOne({'_id': objectid.ObjectId(str(id_put))}, data))
             else:
+                data.update({'created_at': t})
                 reqs.append(pymongo.InsertOne(data))
             q = col.bulk_write(reqs)
 
@@ -91,7 +98,7 @@ def cost_centers(request):
             id_del = request.GET.get('id')
             q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
             
-            return JsonResponse({'removed': q.deleted_count}, safe=False)
+            return JsonResponse({'removed': q.deleted_count})
 
     except (Exception) as e:
         return JsonResponse({'error': f'Invalid request: {e}'})
@@ -105,18 +112,20 @@ def customers(request):
             id_get = request.GET.get('id')
             orders = request.GET.get('orders')
             if id_get:
-                q = col.find_one({'_id': objectid.ObjectId(id_get)})
-                return JsonResponse(json.loads(json_util.dumps()))
+                q = col.find_one({'_id': objectid.ObjectId(str(id_get))})
+                return JsonResponse(json.loads(json_util.dumps(q)))
             else:
                 return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
         
         elif request.method != 'DELETE':
-            data = json.loads(request.body)
+            data = json_util.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
             if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectod.ObjectId(str(id_put))}, {"$set": data}))
+                data.update({'updated_at': t})
+                reqs.append(pymongo.ReplaceOne({'_id': objectid.ObjectId(str(id_put))}, data))
             else:
+                data.update({'created_at': t})
                 reqs.append(pymongo.InsertOne(data))
 
             q = col.bulk_write(reqs)
@@ -125,9 +134,9 @@ def customers(request):
         
         else:
             id_del = request.GET.get('id')
-            q = col.delete_many({'_id':ObjectId(str(id_del))})
+            q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
             
-            return JsonResponse({'removed': q.deleted_count}, safe=False)
+            return JsonResponse({'removed': q.deleted_count})
 
     except Exception as e:    
         return JsonResponse({'error': f'Invalid request: {e}'})
@@ -141,12 +150,14 @@ def products(request):
             return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
         
         elif request.method != 'DELETE':
-            data = json.loads(request.body)
+            data = json_util.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
             if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
+                data.update({'updated_at': t})
+                reqs.append(pymongo.ReplaceOne({'_id': objectid.ObjectId(str(id_put))}, data))
             else:
+                data.update({'created_at': t})
                 reqs.append(pymongo.InsertOne(data))
             q = col.bulk_write(reqs)
 
@@ -156,7 +167,7 @@ def products(request):
             id_del = request.GET.get('id')
             q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
             
-            return JsonResponse({'removed': q.deleted_count}, safe=False)
+            return JsonResponse({'removed': q.deleted_count})
 
     except Exception as e:
         return JsonResponse({'error': f'Invalid request: {e}'})    
@@ -168,15 +179,22 @@ def suppliers(request):
     queryset = list(col.find({}))
     try:
         if request.method == 'GET':
-            return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
+            id_get = request.GET.get('id')
+            if id_get:
+                q = col.find_one({'_id': objectid.ObjectId(str(id_get))})
+                return JsonResponse(json.loads(json_util.dumps(q)))
+            else:
+                return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
         
         elif request.method != 'DELETE':
-            data = json.loads(request.body)
+            data = json_util.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
             if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
+                data.update({'updated_at': t})
+                reqs.append(pymongo.ReplaceOne({'_id': objectid.ObjectId(str(id_put))}, data))
             else:
+                data.update({'created_at': t})
                 reqs.append(pymongo.InsertOne(data))
             q = col.bulk_write(reqs)
 
@@ -184,9 +202,9 @@ def suppliers(request):
         
         else:
             id_del = request.GET.get('id')
-            q = col.delete_many({'_id':ObjectId(str(id_del))})
+            q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
             
-            return JsonResponse({'removed': q.deleted_count}, safe=False)
+            return JsonResponse({'removed': q.deleted_count})
 
     except Exception as e:
         return JsonResponse({'error': f'Invalid request: {e}'})
@@ -200,23 +218,25 @@ def orders(request):
             id_get = request.GET.get('id')
             customers = request.GET.get('customers')
             if id_get and customers:
-                q = col.find({'customers._id': objectid.ObjectId(str(id_get))})
-                return JsonResponse(json.loads(json_util.dumps(list(q))))
+                q = col.find_one({'customer': objectid.ObjectId(str(id_get))})
+                return JsonResponse(json.loads(json_util.dumps(q)))
             elif id_get:
                 q = col.find_one({'_id': objectid.ObjectId(str(id_get))})
+                return JsonResponse(json.loads(json_util.dumps(q)))
             else:
                 return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
         
         elif request.method != 'DELETE':
-            data = json.loads(request.body)
+            data = json_util.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
-            t = datetime.datetime.now()
-            if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
+            customers = request.GET.get('customers')
+            if id_put or customers:
+                data.update({'updated_at': t})
+                data.update({'customer': objectid.ObjectId(str(id_put))})
+                reqs.append(pymongo.ReplaceOne({'_id': objectid.ObjectId(str(id_put))}, data))
             else:
-                d = datetime.date.today()
-                data.update({'order_date': d.strftime('%d.%m.%Y'), 'order_time': t.strftime('%H:%M:%S')})
+                data.update({'order_date': t.split()[0], 'order_time': t.split()[1], 'created_at': t})
                 reqs.append(pymongo.InsertOne(data))
             q = col.bulk_write(reqs)
 
@@ -226,39 +246,10 @@ def orders(request):
             id_del = request.GET.get('id')
             q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
             
-            return JsonResponse({'removed': q.deleted_count}, safe=False)
+            return JsonResponse({'removed': q.deleted_count})
 
     except (Exception) as e:
         return JsonResponse({'error': f'Invalid request: {e}'}, status=400)
-
-
-def delivery_locations(request):
-    col = db.delivery_locations
-    queryset = list(col.find({}))
-    try:
-        if request.method == 'GET':
-            return JsonResponse(json.loads(json_util.dumps(list(col.find({})))), safe=False)
-
-        elif request.method != 'DELETE':
-            data = json.loads(request.body)
-            reqs = []
-            id_put = request.GET.get('id')
-            if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
-            else:
-                reqs.append(pymongo.InsertOne(data))
-            q = col.bulk_write(reqs)
-
-            return JsonResponse({'changed': q.modified_count, 'added': q.inserted_count})
-        
-        else:
-            id_del = request.GET.get('id')
-            q = col.delete_many({'_id': objectid.ObjectId(str(id_del))})
-    
-            return JsonResponse({'removed': q.deleted_count}, safe=False)
-    
-    except (Exception) as e:
-        return JsonResponse({'error': f'Bad request: {e}'}, status=400)
 
 
 def companies(request):
@@ -266,15 +257,18 @@ def companies(request):
     queryset = list(col.find({}))
     try:
         if request.method == 'GET':
-            return JsonResponse(json.loads(json_util.dumps(list(col.find({})))))
+            return JsonResponse(json.loads(json_util.dumps(list(col.find({})))), safe=False)
 
         elif request.method != 'DELETE':
-            data = json.loads(request.body)
+            data = json_util.loads(request.body)
             reqs = []
             id_put = request.GET.get('id')
+            t = datetime.datetime.now()
             if id_put:
-                reqs.append(pymongo.UpdateOne({'_id': objectid.ObjectId(str(id_put))}, {"$set": data}))
+                data.update({'updated_at': t})
+                reqs.append(pymongo.ReplaceOne({'_id': objectid.ObjectId(str(id_put))}, data))
             else:
+                data.update({'created_at': t})
                 reqs.append(pymongo.InsertOne(data))
             q = col.bulk_write(reqs)
 
@@ -290,4 +284,4 @@ def companies(request):
         return JsonResponse({'error': f'Bad request: {e}'}, status=400)
 
 
-client.close()
+db.client.close()
