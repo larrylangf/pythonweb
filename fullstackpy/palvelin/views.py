@@ -22,13 +22,10 @@ def CallApiView(request):
     return Response('luotu')
 
 class CurrencyView(viewsets.ModelViewSet):
-    # authentication_classes = [BasicAuthentication]
-    # permission_classes = [permissions.DjangoModelPermissions]
     serializer_class = CurrencySerializer
     queryset = Currency.objects.all()
 
 @api_view()
-@permission_classes([permissions.IsAdminUser])
 def DeleteView(request):
     currencies = Currency.objects.all()
     queryset = currencies.delete()
@@ -36,8 +33,6 @@ def DeleteView(request):
 
 
 class UserView(viewsets.ModelViewSet):
-    # authentication_classes = [BasicAuthentication]
-    # permission_classes = [permissions.DjangoModelPermissions]
     serializer_class = UserSerializer
     queryset = User.objects.all()
 

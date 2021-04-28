@@ -1,5 +1,6 @@
 appenv
 venv
+env
 __pycache__
 *.py[cod]
 *$py.class
@@ -18,3 +19,4 @@ local_settings.py
 fullstackpy/palvelin/migrations
 __init__.py
 Procfile
+.DS_Store
