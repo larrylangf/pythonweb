@@ -60,6 +60,8 @@ CORS_ORIGIN_WHITELIST = [
     'https://postman.com'
 ]
 
+# CSRF_COOKIE_HTTP_ONLY=True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

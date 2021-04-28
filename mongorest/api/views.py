@@ -7,7 +7,9 @@ import api.services as funcs
 
 
 db = funcs.connect_client()
-t = funcs.ftstamp()
+z = datetime.timezone(datetime.timedelta(hours=2))
+t = datetime.datetime.now(z)
+ftime = funcs.ftstamp(t)
 
 def amounts(request):
     col = db.amounts
@@ -216,13 +218,13 @@ def orders(request):
     try:
         if request.method == 'GET':
             id_get = request.GET.get('id')
-            customers = request.GET.get('customers')
+            customers = request.GET.get('/customers')
             if id_get and customers:
                 q = col.find_one({'customer': objectid.ObjectId(str(id_get))})
-                return JsonResponse(json.loads(json_util.dumps(q)))
+                return JsonResponse(json.loads(json_util.dumps(q)), safe=False)
             elif id_get:
                 q = col.find_one({'_id': objectid.ObjectId(str(id_get))})
-                return JsonResponse(json.loads(json_util.dumps(q)))
+                return JsonResponse(json.loads(json_util.dumps(q)), safe=False)
             else:
                 return JsonResponse(json.loads(json_util.dumps(list(col.find()))), safe=False)
         
