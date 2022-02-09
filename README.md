@@ -1,4 +1,4 @@
-## Valuuttalaskuri
+## Valuuttamuunnin
 ---
 
 ### Kuvaus:
