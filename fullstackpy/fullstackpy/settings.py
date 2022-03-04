@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '&&jjpn-x+#3wgu7)4axnq+tz0@j17gglne+6o8jx*o@&c39ywg'
+SECRET_KEY = '${VALUE}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,12 +46,12 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
    'DEFAULT_AUTHENTICATION_CLASSES': (
        ##'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',
    ),
    'DEFAULT_PERMISSION_CLASSES': (
        ##'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         ##'rest_framework.permissions.IsAdminUser',
-        'rest_framework.permissions.DjangoModelPermissions',
+        #'rest_framework.permissions.DjangoModelPermissions',
    ),
 }
 

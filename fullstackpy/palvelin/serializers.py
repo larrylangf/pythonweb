@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Currency
 from django.contrib.auth.models import User
-
+# Tietokannan suodatus luokat
 class CurrencySerializer(serializers.ModelSerializer):
     class Meta:
         model = Currency

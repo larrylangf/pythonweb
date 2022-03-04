@@ -1,20 +1,20 @@
 ## Valuuttamuunnin
 ---
 
-### Kuvaus:
+### Kuvaus
 
-### Yksilöprojekti ohjelmistokehityksen teknologiat kurssilla 
-### Toteutettu Python ja Django web-teknologialla 
-
-
-**Käyttää fixer.io api:a valuuttakurssien hakemiseen**
-
-**Muuntaa syötteeltä annetun määrän euroja, listasta valittuun valuttaan**
-
-**Valuuttojen käänteinen muunnos**
+### Yksilöprojekti ohjelmistokehityksen teknologiat kurssilla, jonka tavoitteena oli tutustua sovelluskehitykseen Djangolla
+### Sovellus toimii paikallisesti kehitysympäristössä
 
 
-**Autentikointi, käyttäjäkohtaiset luvat HTTP:n perus autentikoinnilla ja django rest-framework permission luokkien avulla**
+**Backend käyttää fixer.io api:a valuuttakurssien hakemiseen ja talettaa ne SQLite tietokantaan**
+**Käyttäjäkohtaiset luvat tarkistetaan rajapinnan muokkaaviin toimintoihin HTTP:n perus autentikoinnilla ja django rest-framework permission luokkien avulla**
+
+**Frontend sisällytetty projektiin React moduulina**
+
+**Lomake tulee näkyviin avaus painikkeesta. Sovellus muuntaa käyttäjän tekstikenttään syöttämän määrän euroja ja muuntaa listasta valittuun valuttaan, jonka lopuksi näyttää tuloksen**
+
+**Käyttöliittymän toisena ominaisuutena valuuttojen käänteinen muunnos**
 
 
 **Tekijä: Lauri Leinonen**

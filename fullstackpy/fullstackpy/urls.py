@@ -22,7 +22,7 @@ from django.contrib.auth import views as auth_views
 
 router = routers.DefaultRouter()
 router.register(r'valuutat', views.CurrencyView)
-router.register(r'käyttäjät', views.UserView)
+router.register(r'kayttajat', views.UserView)
 
 urlpatterns = [
     path('admin/', admin.site.urls), 

@@ -12,14 +12,14 @@ from rest_framework.authentication import BasicAuthentication
 @api_view()
 @permission_classes([permissions.IsAdminUser])
 def CallApiView(request):
-    url = 'http://data.fixer.io/api/latest?access_key=2abd8709720df12e08596d320985579c'
+    url = 'http://data.fixer.io/api/latest?access_key=${API_KEY}'
 
-    r = requests.get(url = url) 
+    r = requests.get(url) 
     data = r.json()
     for key, value in data['rates'].items():
         Currency.objects.create(name=key, rate=value)
       
-    return Response('luotu')
+    return Response('Tiedot haettu apista')
 
 class CurrencyView(viewsets.ModelViewSet):
     serializer_class = CurrencySerializer
@@ -29,9 +29,9 @@ class CurrencyView(viewsets.ModelViewSet):
 def DeleteView(request):
     currencies = Currency.objects.all()
     queryset = currencies.delete()
-    return Response('Poisettu')
+    return Response('Paikallinen tietokanta tyhjennetty')
 
-
+# kaikki käyttäjät
 class UserView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
@@ -40,10 +40,10 @@ class UserView(viewsets.ModelViewSet):
 @permission_classes([permissions.AllowAny])
 def UserLogout(request):
     request.session.delete()
-    return Response('Kirjattu ulos')
+    return Response('Kirjauduttu ulos')
+
 
 @api_view(['GET'])
-@permission_classes([permissions.AllowAny])
 def getCurrencies(request):
     queryset = Currency.objects.all()
     serializer = CurrencySerializer(queryset, many=True)
