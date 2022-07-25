@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -42,18 +43,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'palvelin'
 ]
-
-REST_FRAMEWORK = {
-   'DEFAULT_AUTHENTICATION_CLASSES': (
-       ##'rest_framework.authentication.TokenAuthentication',
-        #'rest_framework.authentication.BasicAuthentication',
-   ),
-   'DEFAULT_PERMISSION_CLASSES': (
-       ##'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        ##'rest_framework.permissions.IsAdminUser',
-        #'rest_framework.permissions.DjangoModelPermissions',
-   ),
-}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -133,14 +122,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'muunnin')
-
+# STATIC_ROOT = os.path.join(BASE_DIR, 'muunnin')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+#STATICFILES_DIRS = (
+    # os.path.join(BASE_DIR, 'static'),
+#)
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',

@@ -17,8 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from palvelin import views
-from palvelin import models
-from django.contrib.auth import views as auth_views
 
 router = routers.DefaultRouter()
 router.register(r'valuutat', views.CurrencyView)
@@ -26,9 +24,9 @@ router.register(r'kayttajat', views.UserView)
 
 urlpatterns = [
     path('admin/', admin.site.urls), 
-    path('api/', include(router.urls)),
-    path('päivitä', views.CallApiView),
-    path('tyhjennä', views.DeleteView),
-    path('poistu', views.UserLogout),
-    path('hae', views.getCurrencies)
+    path('', include(router.urls)),
+    path('hae', views.CallApiView),
+    path('poista-tiedot', views.DeleteView),
+    path('kirjaudu-ulos', views.UserLogout),
+    path('kurssit', views.getCurrencies)
 ]
