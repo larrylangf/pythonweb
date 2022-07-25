@@ -6,7 +6,7 @@ import {allstyles} from '../styles';
 import '../App.css'
 //Oma moduuli joka näyttää sisältöä uudessa ikkunassa ilman navigointia
 export function Cmodal(props) {
-
+  
     const [currency, setCurrency] = useState();
     const [convert, setConvert] = useState("EUR");
     const [amount, setAmount] = useState(0);
@@ -31,9 +31,6 @@ export function Cmodal(props) {
         else if(mapcs.curr<mapcs.conr) {
           let rate = (mapcs.curr/mapcs.conr);
           setResult((amount * rate).toFixed(2));
-        }
-        else if (currency === "EUR" & convert === "EUR") {
-          setResult(amount);
         }
         else {
           let rate = (mapcs.conr/mapcs.curr);

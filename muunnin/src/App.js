@@ -4,28 +4,25 @@ import {Typography, AppBar, Paper, TableRow, Table, TableHead, TableCell,
 import {allstyles} from './styles';
 import './App.css'
 import {Cmodal} from './Components/Cmodal';
-import axios from 'axios';
 
 export default function App() {
 
-  const [data, setData] = useState([]);
+  const [rates, setRates] = useState({});
   const [open, setOpen] = useState(false);
 
-  useEffect(()=> {
-    getCurr();
-    return () => {
-    
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/kurssit');
+        const json = await res.json();
+        setRates(json);
+      } catch (error) {
+        console.log("error", error);
+      }
     }
-  },[]);
-
-  const getCurr = () => {
-    let url = 'http://127.0.0.1:8000/hae';
-        axios.get(url)
-        .then(res => setData(res.data))
-        .catch((err) => { 
-          console.log(err);
-        }); 
-  }
+    fetchData();
+    return () => {}
+  }, []);
 
   const handleClose = () => {
     setOpen(false)
@@ -37,7 +34,7 @@ export default function App() {
 
   //Tyyli moduulin alustus
   const jss = allstyles();
-  
+
   return (
     <div className="root">
       <AppBar position='static' classes={{root: jss[0].root}}>
@@ -58,7 +55,7 @@ export default function App() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.map(item => (
+                  {rates.map(item => (
                     <TableRow key={item.id}>
                       <TableCell classes={{root: jss[9].root}}>
                         <Typography>{item.name}</Typography>
@@ -77,10 +74,10 @@ export default function App() {
               </Table>
             </Paper>
             <Cmodal 
-              all={data}
+              all={rates}
               value={open}
               quit={handleClose}
             />
     </div>
-   );
+  );
 }
